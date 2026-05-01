@@ -152,11 +152,13 @@ function move(dir) {
 
     if (grid.flat().includes(2048)) {
       updateScore(score);
+      if (typeof submitScore === 'function') submitScore(score);
       setMsg('🎉 You reached 2048! Amazing!', '#ffd700');
       return;
     }
     if (isGameOver()) {
       updateScore(score);
+      if (typeof submitScore === 'function') submitScore(score);
       setMsg(`💀 Game Over! Score: ${score}`, '#ff6b6b');
     }
   }

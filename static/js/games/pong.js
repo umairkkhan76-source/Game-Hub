@@ -189,7 +189,9 @@ function update() {
 
 function endGame(winner) {
   running = false;
-  updateScore(Math.max(scoreL, scoreR) * 10);
+  const finalScore = Math.max(scoreL, scoreR) * 10;
+  updateScore(finalScore);
+  if (typeof submitScore === 'function') submitScore(finalScore);
   setMsg(`${winner} player wins! 🏆 Press a difficulty to play again`, '#00ff87');
 }
 

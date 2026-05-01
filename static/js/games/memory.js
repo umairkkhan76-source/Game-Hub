@@ -176,6 +176,7 @@ function check() {
       clearInterval(timerInt);
       const s = Math.max(1000 - moves * 20 - timeSec * 5, 100);
       updateScore(s);
+      if (typeof submitScore === 'function') submitScore(s);
       setMsg(`🎉 Won in ${moves} moves & ${timeSec}s!`, 'win');
     }
   } else {

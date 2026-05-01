@@ -279,6 +279,7 @@ function finishTurn() {
     if (check) {
       const winner = opp(turn);
       setMsg(`♟️ CHECKMATE! ${winner.toUpperCase()} WINS! 🎉`, '#ffd700');
+      if (typeof submitScore === 'function') submitScore(100);
       gameOver=true;
     } else {
       setMsg('🤝 STALEMATE — Draw!', '#aaaaaa');

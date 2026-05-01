@@ -228,6 +228,7 @@ function checkBoard() {
   if (errors === 0 && empty === 0) {
     setMsg('🎉 Perfect! Puzzle solved!', '#00ff87');
     updateScore(1000);
+    if (typeof submitScore === 'function') submitScore(1000);
   } else if (errors === 0) {
     setMsg(`✅ No errors! ${empty} cells remaining`, '#4ecdc4');
   } else {

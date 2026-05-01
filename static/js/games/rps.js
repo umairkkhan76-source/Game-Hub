@@ -174,7 +174,9 @@ function play(choice) {
 }
 
 function showResult() {
-  updateScore(playerScore * 20);
+  const finalScore = playerScore * 20;
+  updateScore(finalScore);
+  if (typeof submitScore === 'function') submitScore(finalScore);
   const roundInfo = document.getElementById('round-info');
   const m = document.getElementById('msg');
 

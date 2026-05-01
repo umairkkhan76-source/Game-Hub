@@ -106,6 +106,7 @@ function die() {
   cancelAnimationFrame(raf);
   if (score > bestScore) bestScore = score;
   updateScore(score); // save final score only once
+  if (typeof submitScore === 'function') submitScore(score);
   const m = document.getElementById('msg');
   m.textContent = `💀 Score: ${score}  |  Best: ${bestScore}  —  Click to retry`;
   m.style.color = '#ff6b6b';

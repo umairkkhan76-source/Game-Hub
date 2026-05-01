@@ -60,6 +60,7 @@ function tick() {
     running = false;
     clearInterval(loop);
     updateScore(score);
+    if (typeof submitScore === 'function') submitScore(score);
     const m = document.getElementById('msg');
     m.textContent = `GAME OVER — Score: ${score}`;
     m.style.color = '#ff6b6b';

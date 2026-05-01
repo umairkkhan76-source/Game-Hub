@@ -68,6 +68,7 @@ function move(i) {
   if (w) {
     wins[current]++;
     updateScore(10);
+    if (typeof submitScore === 'function') submitScore(10);
     setMsg(`Player ${current} wins! 🎉`, 'win');
     gameOver = true;
     render();

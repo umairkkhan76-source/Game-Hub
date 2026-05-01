@@ -126,6 +126,7 @@ function answer(btn, chosen, correct) {
 
 function endGame() {
   updateScore(score);
+  if (typeof submitScore === 'function') submitScore(score);
   document.getElementById('quiz-wrap').innerHTML = `
     <div style="text-align:center; padding:2rem">
       <h2 style="font-family:'Orbitron',monospace; font-size:2.5rem; color:#00ff87">${score}/100</h2>

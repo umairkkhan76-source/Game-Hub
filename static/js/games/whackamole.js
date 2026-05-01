@@ -180,6 +180,7 @@ function endGame() {
   clearInterval(timerInterval);
   clearTimeout(popTimeout);
   updateScore(score);
+  if (typeof submitScore === 'function') submitScore(score);
 
   // Hide all moles
   for (let i = 0; i < HOLES; i++) {

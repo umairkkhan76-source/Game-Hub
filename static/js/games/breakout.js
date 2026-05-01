@@ -138,6 +138,7 @@ function update() {
     lives--;
     if (lives <= 0) {
       updateScore(score);
+      if (typeof submitScore === 'function') submitScore(score);
       setMsg('GAME OVER 💀 — Press a difficulty button to retry', '#ff6b6b');
       running = false;
       draw(); return;
@@ -203,6 +204,7 @@ function update() {
   // Win!
   if (bricks.every(b => !b.alive)) {
     updateScore(score);
+    if (typeof submitScore === 'function') submitScore(score);
     setMsg('🎉 YOU WIN! Amazing!', '#00ff87');
     running = false;
   }

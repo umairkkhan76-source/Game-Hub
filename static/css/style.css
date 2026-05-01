@@ -148,9 +148,15 @@ a { text-decoration: none; color: inherit; }
 }
 .theme-toggle:hover { background-color: rgba(128,128,128,0.2); }
 
-/* Mobile hamburger */
-.show-mobile { display: none !important; }
-.hide-mobile { display: flex !important; }
+/* Mobile hamburger — hidden on desktop, shown on mobile */
+.show-mobile { display: none; }   /* default: hidden on desktop */
+.hide-mobile { display: flex; }   /* default: shown on desktop */
+
+@media (max-width: 768px) {
+  .navbar { flex-wrap: wrap; padding: 0.75rem 1rem; }
+  .show-mobile { display: flex !important; }   /* show hamburger on mobile */
+  .hide-mobile { display: none !important; }   /* hide desktop nav on mobile */
+}
 
 /* === HERO === */
 .hero {
