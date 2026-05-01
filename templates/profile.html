@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block title %}Profile – Game Hub{% endblock %}
+{% block content %}
+<div class="profile-page">
+
+  <!-- Header -->
+  <div class="profile-header">
+    <div class="profile-avatar">{{ profile.avatar }}</div>
+    <div style="flex:1">
+      <div class="profile-name">{{ profile.username }}</div>
+      <div class="profile-meta">
+        Member since {{ profile.created_at[:10] }}
+        {% if profile.email %} · 📧 {{ profile.email }}{% endif %}
+      </div>
+      {% if profile.bio %}
+      <div class="profile-bio">{{ profile.bio }}</div>
+      {% endif %}
+      <div class="profile-stats">
+        <div class="p-stat">
+          <div class="p-stat-num">{{ scores|length }}</div>
+          <div class="p-stat-lbl">Games Played</div>
+        </div>
+        <div class="p-stat">
+          <div class="p-stat-num">{{ total_games }}</div>
+          <div class="p-stat-lbl">Total Sessions</div>
+        </div>
+        <div class="p-stat">
+          <div class="p-stat-num">{{ scores|selectattr('score')|map(attribute='score')|sum }}</div>
+          <div class="p-stat-lbl">Total Score</div>
+        </div>
+      </div>
+    </div>
+    <button class="edit-profile-btn" onclick="openEdit()">✏️ Edit Profile</button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="profile-tabs">
+    <button class="p-tab active" onclick="showTab('scores',this)">🏆 Best Scores</button>
+    <button class="p-tab" onclick="showTab('history',this)">📜 Play History</button>
+  </div>
+
+  <!-- Best Scores -->
+  <div class="profile-section" id="tab-scores">
+    {% if scores %}
+    <div class="scores-grid">
+      {% set ICONS = {'snake':'🐍','tictactoe':'⭕','memory':'🃏','quiz':'🧠','breakout':'🧱',
+                      'flappy':'🐦','whackamole':'🔨','chess':'♟️','sudoku':'🔢',
+                      'pong':'🏓','game2048':'2️⃣','rps':'✂️'} %}
+      {% for s in scores %}
+      <div class="score-card">
+        <div class="score-card-game">{{ ICONS.get(s.game,'🎮') }}</div>
+        <div class="score-card-name">{{ s.game|upper }}</div>
+        <div class="score-card-val">{{ "{:,}".format(s.score) }}</div>
+        <div style="color:var(--muted);font-size:.75rem;margin-top:.3rem">{{ s.played_at[:10] }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><span>🎮</span>No scores yet! Play a game to get started.</div>
+    {% endif %}
+  </div>
+
+  <!-- History -->
+  <div class="profile-section" id="tab-history" style="display:none">
+    {% if history %}
+    <div class="history-list">
+      {% set ICONS = {'snake':'🐍','tictactoe':'⭕','memory':'🃏','quiz':'🧠','breakout':'🧱',
+                      'flappy':'🐦','whackamole':'🔨','chess':'♟️','sudoku':'🔢',
+                      'pong':'🏓','game2048':'2️⃣','rps':'✂️'} %}
+      {% for h in history %}
+      <div class="history-item">
+        <div class="h-game">
+          <span>{{ ICONS.get(h.game,'🎮') }}</span>
+          <span>{{ h.game }}</span>
+        </div>
+        <span class="h-score">{{ "{:,}".format(h.score) }}</span>
+        <span class="h-date">{{ h.played_at[:16] }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><span>📜</span>No play history yet!</div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEdit()">✕</button>
+    <h3>✏️ Edit Profile</h3>
+    <div class="form-group">
+      <label>Bio</label>
+      <textarea id="edit-bio" rows="3" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:.75rem;border-radius:8px;font-family:inherit;resize:none">{{ profile.bio or '' }}</textarea>
+    </div>
+    <div class="form-group">
+      <label>Avatar</label>
+      <div class="avatar-picker" id="edit-avatar-picker">
+        {% for av in ['🎮','🕹️','👾','🤖','🦊','🐉','⚡','🔥','💎','🎯','🏆','🌟'] %}
+        <div class="avatar-opt {% if av == profile.avatar %}selected{% endif %}"
+             data-av="{{ av }}" onclick="pickAv(this)">{{ av }}</div>
+        {% endfor %}
+      </div>
+      <input type="hidden" id="edit-avatar" value="{{ profile.avatar }}">
+    </div>
+    <button class="auth-btn" onclick="saveProfile()">SAVE CHANGES</button>
+  </div>
+</div>
+
+<script>
+function showTab(name, btn) {
+  document.getElementById('tab-scores').style.display  = name==='scores'  ? '' : 'none';
+  document.getElementById('tab-history').style.display = name==='history' ? '' : 'none';
+  document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+function openEdit()  { document.getElementById('edit-modal').classList.add('open'); }
+function closeEdit() { document.getElementById('edit-modal').classList.remove('open'); }
+function pickAv(el) {
+  document.querySelectorAll('#edit-avatar-picker .avatar-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('edit-avatar').value = el.dataset.av;
+}
+async function saveProfile() {
+  const bio    = document.getElementById('edit-bio').value;
+  const avatar = document.getElementById('edit-avatar').value;
+  const res    = await fetch('/api/update_profile', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({bio, avatar})
+  });
+  const data = await res.json();
+  if (data.success) window.location.reload();
+}
+</script>
+{% endblock %}

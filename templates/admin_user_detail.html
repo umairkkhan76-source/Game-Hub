@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ user.username }} - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div style="max-width:900px; margin:2rem auto; padding:1rem;">
+    <a href="/admin" style="color:#7070a0; text-decoration:none;">← Back to Dashboard</a>
+    <h2 style="color:#00ff87; font-family:'Orbitron',monospace; margin-top:1rem;">
+        {{ user.avatar }} {{ user.username }}
+    </h2>
+    <p style="color:#aaa;">Email: {{ user.email or '—' }} &nbsp;|&nbsp; Joined: {{ user.created_at[:10] }}</p>
+    {% if user.bio %}
+    <p style="color:#7070a0;">Bio: {{ user.bio }}</p>
+    {% endif %}
+
+    <h3 style="color:#ffd700; font-family:'Orbitron',monospace; margin-top:2rem;">🏆 Best Scores</h3>
+    {% if scores %}
+    <table style="width:100%; border-collapse:collapse; margin-bottom:2rem;">
+        <tr style="color:#7070a0; font-size:.85rem;">
+            <th style="padding:.6rem; text-align:left;">Game</th>
+            <th style="padding:.6rem; text-align:left;">Score</th>
+            <th style="padding:.6rem; text-align:left;">Date</th>
+        </tr>
+        {% for s in scores %}
+        <tr style="border-bottom:1px solid #2a2a3a;">
+            <td style="padding:.6rem; color:#00ff87;">{{ s.game }}</td>
+            <td style="padding:.6rem; color:#ffd700;">{{ s.score }}</td>
+            <td style="padding:.6rem; color:#7070a0; font-size:.85rem;">{{ s.played_at[:10] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p style="color:#7070a0;">No scores yet.</p>
+    {% endif %}
+
+    <h3 style="color:#a29bfe; font-family:'Orbitron',monospace;">📋 Play History (last 50)</h3>
+    {% if history %}
+    <table style="width:100%; border-collapse:collapse;">
+        <tr style="color:#7070a0; font-size:.85rem;">
+            <th style="padding:.6rem; text-align:left;">Game</th>
+            <th style="padding:.6rem; text-align:left;">Score</th>
+            <th style="padding:.6rem; text-align:left;">Date</th>
+        </tr>
+        {% for h in history %}
+        <tr style="border-bottom:1px solid #1a1a2a;">
+            <td style="padding:.6rem; color:#e8e8f0;">{{ h.game }}</td>
+            <td style="padding:.6rem; color:#a29bfe;">{{ h.score }}</td>
+            <td style="padding:.6rem; color:#7070a0; font-size:.85rem;">{{ h.played_at[:10] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p style="color:#7070a0;">No history yet.</p>
+    {% endif %}
+</div>
+</body>
+</html>

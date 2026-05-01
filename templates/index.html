@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Game Hub – Play 10 Amazing Games{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-content">
+    <h1 class="hero-title">GAME<span>HUB</span></h1>
+    <p class="hero-sub">12 Classic Games · Leaderboards · Compete with Friends</p>
+    {% if not user %}
+    <div class="hero-btns">
+      <a href="/register" class="cta-btn">Get Started</a>
+      <a href="/login" class="cta-btn cta-outline">Login</a>
+    </div>
+    {% else %}
+    <p class="hero-welcome">Welcome back, <strong>{{ user }}</strong>! Ready to play? 🎮</p>
+    {% endif %}
+  </div>
+  <div class="hero-bg"></div>
+</section>
+
+<section class="games-section">
+  <h2 class="section-title">CHOOSE YOUR GAME</h2>
+  <div class="games-grid">
+
+    <a href="/game/snake" class="game-card" style="--c:#00ff87">
+      <div class="game-icon">🐍</div>
+      <h3>Snake</h3>
+      <p>Eat food, grow longer, don't hit walls!</p>
+      <span class="game-tag">Classic</span>
+    </a>
+
+    <a href="/game/tictactoe" class="game-card" style="--c:#ff6b6b">
+      <div class="game-icon">⭕</div>
+      <h3>Tic Tac Toe</h3>
+      <p>The timeless 3×3 strategy game</p>
+      <span class="game-tag">2 Player</span>
+    </a>
+
+    <a href="/game/memory" class="game-card" style="--c:#4ecdc4">
+      <div class="game-icon">🃏</div>
+      <h3>Memory Cards</h3>
+      <p>Match all pairs with fewest moves</p>
+      <span class="game-tag">Puzzle</span>
+    </a>
+
+    <a href="/game/quiz" class="game-card" style="--c:#ffe66d">
+      <div class="game-icon">🧠</div>
+      <h3>Quiz Trivia</h3>
+      <p>Test your knowledge across topics</p>
+      <span class="game-tag">Knowledge</span>
+    </a>
+
+    <a href="/game/breakout" class="game-card" style="--c:#ff9f43">
+      <div class="game-icon">🧱</div>
+      <h3>Breakout</h3>
+      <p>Break all bricks with your ball</p>
+      <span class="game-tag">Arcade</span>
+    </a>
+
+    <a href="/game/whackamole" class="game-card" style="--c:#a29bfe">
+      <div class="game-icon">🔨</div>
+      <h3>Whack-a-Mole</h3>
+      <p>Whack those moles before they hide!</p>
+      <span class="game-tag">Action</span>
+    </a>
+
+    <a href="/game/chess" class="game-card" style="--c:#fd79a8">
+      <div class="game-icon">♟️</div>
+      <h3>Chess</h3>
+      <p>The ultimate strategy board game</p>
+      <span class="game-tag">Strategy</span>
+    </a>
+
+    <a href="/game/sudoku" class="game-card" style="--c:#55efc4">
+      <div class="game-icon">🔢</div>
+      <h3>Sudoku</h3>
+      <p>Fill the 9×9 grid with logic</p>
+      <span class="game-tag">Puzzle</span>
+    </a>
+
+    <a href="/game/game2048" class="game-card" style="--c:#ffeaa7">
+      <div class="game-icon">🟦</div>
+      <h3>2048</h3>
+      <p>Slide tiles to reach 2048!</p>
+      <span class="game-tag">Puzzle</span>
+    </a>
+
+    <a href="/game/rps" class="game-card" style="--c:#74b9ff">
+      <div class="game-icon">✂️</div>
+      <h3>Rock Paper Scissors</h3>
+      <p>Beat the computer in best of 5!</p>
+      <span class="game-tag">Luck</span>
+    </a>
+
+    <a href="/game/pong" class="game-card" style="--c:#fd79a8">
+      <div class="game-icon">🏓</div>
+      <h3>Pong</h3>
+      <p>First to 7 wins — vs AI or 2 player!</p>
+      <span class="game-tag">Arcade</span>
+    </a>
+
+    <a href="/game/flappy" class="game-card" style="--c:#55efc4">
+      <div class="game-icon">🐦</div>
+      <h3>Flappy Bird</h3>
+      <p>Dodge the pipes — how far can you go?</p>
+      <span class="game-tag">Action</span>
+    </a>
+
+  </div>
+</section>
+
+<section class="features">
+  <div class="feature-card">
+    <span>🏆</span>
+    <h3>Leaderboards</h3>
+    <p>Compete for the top spot in every game</p>
+  </div>
+  <div class="feature-card">
+    <span>👤</span>
+    <h3>User Accounts</h3>
+    <p>Register and track your high scores</p>
+  </div>
+  <div class="feature-card">
+    <span>🎮</span>
+    <h3>12 Games</h3>
+    <p>Classic games playable right in browser</p>
+  </div>
+</section>
+{% endblock %}

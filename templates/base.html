@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Game Hub{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  {% block extra_css %}{% endblock %}
+
+  <!-- Apply theme BEFORE render to avoid flash -->
+  <script>
+    (function() {
+      var t = localStorage.getItem('gh-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="/" class="logo">🎮 GAME<span>HUB</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/leaderboard">Leaderboard</a>
+      {% if user %}
+        <a href="/profile" class="nav-user">{{ session.get('avatar','🎮') }} {{ user }}</a>
+        <a href="/logout" class="btn-nav">Logout</a>
+      {% else %}
+        <a href="/login" class="btn-nav">Login</a>
+        <a href="/register" class="btn-nav btn-primary">Register</a>
+      {% endif %}
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode" id="theme-btn">🌙</button>
+    </div>
+  </nav>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="/static/js/main.js"></script>
+  <script>
+    // Set correct icon after DOM ready
+    (function() {
+      var t = localStorage.getItem('gh-theme') || 'dark';
+      var btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = t === 'dark' ? '🌙' : '☀️';
+    })();
+
+    function toggleTheme() {
+      var html = document.documentElement;
+      var curr = html.getAttribute('data-theme') || 'dark';
+      var next = curr === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('gh-theme', next);
+      var btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = next === 'dark' ? '🌙' : '☀️';
+    }
+  </script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

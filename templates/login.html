@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Login – Game Hub{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-logo">🎮</div>
+    <h2>Welcome Back</h2>
+    <p class="auth-sub">Login to save scores &amp; climb the leaderboard</p>
+
+    <div id="error-msg" class="error-msg" style="display:none">
+      <span>⚠️</span>&nbsp;<span id="err-text"></span>
+    </div>
+
+    <div class="form-group">
+      <label><span>👤</span>&nbsp;Username or Email</label>
+      <input type="text" id="username" placeholder="Enter username or email" autocomplete="username">
+    </div>
+
+    <div class="form-group">
+      <label><span>🔒</span>&nbsp;Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="Enter password" autocomplete="current-password">
+        <button class="toggle-pw" type="button" onclick="togglePw('password', this)">👁️</button>
+      </div>
+      <a href="/forgot-password" class="forgot-link">Forgot password?</a>
+    </div>
+
+    <button class="auth-btn" id="login-btn" onclick="doLogin()">LOGIN</button>
+    <div class="auth-divider">or</div>
+    <p class="auth-link">New to Game Hub? <a href="/register">Create account →</a></p>
+  </div>
+</div>
+
+<script>
+function togglePw(id, btn) {
+  var inp = document.getElementById(id);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁️'; }
+}
+
+function showErr(msg) {
+  document.getElementById('err-text').textContent = msg;
+  document.getElementById('error-msg').style.display = 'flex';
+}
+
+function hideErr() {
+  document.getElementById('error-msg').style.display = 'none';
+}
+
+async function doLogin() {
+  hideErr();
+  var username = document.getElementById('username').value.trim();
+  var password = document.getElementById('password').value;
+
+  if (!username) { showErr('Please enter your username or email'); return; }
+  if (!password) { showErr('Please enter your password'); return; }
+
+  var btn = document.getElementById('login-btn');
+  btn.disabled = true;
+  btn.textContent = 'Logging in...';
+
+  try {
+    var res = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username, password: password })
+    });
+
+    if (!res.ok) {
+      showErr('Server error. Please try again.');
+      btn.disabled = false; btn.textContent = 'LOGIN'; return;
+    }
+
+    var data = await res.json();
+    if (data.success) {
+      btn.textContent = '✓ Success!';
+      window.location.href = '/';
+    } else {
+      showErr(data.message || 'Invalid credentials');
+      btn.disabled = false; btn.textContent = 'LOGIN';
+    }
+  } catch (err) {
+    showErr('Connection error: ' + err.message);
+    btn.disabled = false; btn.textContent = 'LOGIN';
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doLogin();
+});
+</script>
+{% endblock %}

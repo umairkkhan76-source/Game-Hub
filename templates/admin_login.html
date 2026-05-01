@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login - Game Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="container" style="max-width:400px; margin:5rem auto; padding:2rem;">
+    <h2 style="color:#00ff87; font-family:'Orbitron',monospace; text-align:center;">🔐 ADMIN LOGIN</h2>
+    <p id="msg" style="color:red; text-align:center;"></p>
+    <label style="color:#aaa;">Username</label>
+    <input type="text" id="username" style="width:100%; padding:.7rem; margin:.5rem 0 1rem; background:#16161f; border:1px solid #2a2a3a; border-radius:8px; color:#fff;">
+    <label style="color:#aaa;">Password</label>
+    <input type="password" id="password" style="width:100%; padding:.7rem; margin:.5rem 0 1rem; background:#16161f; border:1px solid #2a2a3a; border-radius:8px; color:#fff;">
+    <button onclick="doLogin()" style="width:100%; padding:.8rem; background:#00ff87; color:#000; border:none; border-radius:8px; font-weight:700; cursor:pointer; font-size:1rem;">LOGIN</button>
+    <p style="text-align:center; margin-top:1rem;"><a href="/admin/register" style="color:#7070a0;">Register Admin</a></p>
+    <script>
+    async function doLogin() {
+        const res = await fetch('/admin/login', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            })
+        });
+        const data = await res.json();
+        if (data.success) window.location.href = '/admin';
+        else document.getElementById('msg').textContent = data.message;
+    }
+    </script>
+</div>
+</body>
+</html>

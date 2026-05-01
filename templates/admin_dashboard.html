@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard - Game Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div style="max-width:1000px; margin:2rem auto; padding:1rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+        <h2 style="color:#00ff87; font-family:'Orbitron',monospace;">🛡️ ADMIN DASHBOARD</h2>
+        <div>
+            <span style="color:#7070a0; margin-right:1rem;">{{ admin }}</span>
+            <a href="/admin/logout" style="color:#ff6b6b; text-decoration:none;">Logout</a>
+        </div>
+    </div>
+    <p style="color:#aaa; margin-bottom:1rem;">Total Users: <strong style="color:#00ff87;">{{ users|length }}</strong></p>
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="background:#16161f; color:#7070a0; font-family:'Orbitron',monospace; font-size:.8rem;">
+                <th style="padding:.8rem; text-align:left;">#</th>
+                <th style="padding:.8rem; text-align:left;">User</th>
+                <th style="padding:.8rem; text-align:left;">Email</th>
+                <th style="padding:.8rem; text-align:left;">Games Played</th>
+                <th style="padding:.8rem; text-align:left;">Joined</th>
+                <th style="padding:.8rem; text-align:left;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for u in users %}
+        <tr style="border-bottom:1px solid #2a2a3a;" id="row-{{ u.id }}">
+            <td style="padding:.8rem; color:#7070a0;">{{ loop.index }}</td>
+            <td style="padding:.8rem;">
+                <a href="/admin/user/{{ u.id }}" style="color:#00ff87; text-decoration:none;">
+                    {{ u.avatar }} {{ u.username }}
+                </a>
+            </td>
+            <td style="padding:.8rem; color:#aaa;">{{ u.email or '—' }}</td>
+            <td style="padding:.8rem; color:#a29bfe;">{{ u.total_games }}</td>
+            <td style="padding:.8rem; color:#7070a0; font-size:.85rem;">{{ u.created_at[:10] }}</td>
+            <td style="padding:.8rem;">
+                <button onclick="deleteUser({{ u.id }}, this.dataset.name)" data-name="{{ u.username }}"
+                    style="background:#ff6b6b; color:#fff; border:none; padding:.3rem .8rem; border-radius:6px; cursor:pointer; font-size:.85rem;">
+                    🗑 Delete
+                </button>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+async function deleteUser(id, name) {
+    if (!confirm(`Delete user "${name}" and all their data?`)) return;
+    const res = await fetch(`/admin/delete_user/${id}`, { method:'POST' });
+    const data = await res.json();
+    if (data.success) {
+        document.getElementById('row-' + id).remove();
+        alert(`User "${name}" deleted.`);
+    }
+}
+</script>
+</body>
+</html>

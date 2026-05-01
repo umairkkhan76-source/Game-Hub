@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ game|title }} – Game Hub{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/games.css">
+{% endblock %}
+
+{% block content %}
+<div class="game-page">
+  <div class="game-header" style="display:flex; align-items:center; justify-content:space-between; padding:15px 20px; background:var(--bg2); border-bottom:1px solid var(--border); margin:-2rem -2rem 2rem -2rem;">
+    <a href="/" class="mobile-nav-btn" style="font-size:1.5rem; color:var(--text); text-decoration:none;">❮</a>
+    <div class="game-info" style="flex:1; text-align:center;">
+      <h2 id="game-title" style="font-family:'Rajdhani',sans-serif; font-weight:600; font-size:1.3rem; margin:0; color:var(--text);">Loading...</h2>
+      <span class="score-display hide-mobile">Score: <span id="score-val">0</span></span>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      {% if user %}
+      <button id="save-score-btn" class="save-btn hide-mobile" onclick="submitScore()" style="display:none; padding:5px 10px; background:var(--accent); color:var(--bg); border:none; border-radius:5px; font-weight:bold;">💾 Save Score</button>
+      {% else %}
+      <a href="/login" class="save-btn hide-mobile" style="font-size:0.8rem; color:var(--muted); text-decoration:none;">Login to Save</a>
+      {% endif %}
+      <button class="mobile-nav-btn" style="font-size:1.5rem; color:var(--text); background:none; border:none; cursor:pointer;">☰</button>
+    </div>
+  </div>
+
+  <div id="game-container"></div>
+</div>
+
+<script>
+const GAME_NAME = "{{ game }}";
+const IS_LOGGED_IN = {{ 'true' if user else 'false' }};
+
+async function submitScore() {
+  const score = parseInt(document.getElementById('score-val').textContent) || 0;
+  const res = await fetch('/api/score', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({game: GAME_NAME, score})
+  });
+  const data = await res.json();
+  if (data.success) {
+    alert('Score saved! 🎉');
+    document.getElementById('save-score-btn').style.display = 'none';
+  }
+}
+
+function updateScore(val) {
+  const num = parseInt(val) || 0;
+  document.getElementById('score-val').textContent = num;
+  if (IS_LOGGED_IN) {
+    document.getElementById('save-score-btn').style.display = 'inline-block';
+    fetch('/api/score', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({game: GAME_NAME, score: num})
+    });
+  }
+}
+</script>
+<script src="/static/js/games/{{ game }}.js"></script>
+{% endblock %}

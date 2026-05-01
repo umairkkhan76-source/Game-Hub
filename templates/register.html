@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}Register – Game Hub{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-logo">🕹️</div>
+    <h2>Create Account</h2>
+    <p class="auth-sub">Join Game Hub — track scores &amp; beat others</p>
+
+    <div id="error-msg" class="error-msg" style="display:none">
+      <span>⚠️</span>&nbsp;<span id="err-text"></span>
+    </div>
+
+    <div class="form-group">
+      <label><span>👤</span>&nbsp;Username</label>
+      <input type="text" id="username" placeholder="Min 3 characters" autocomplete="username" oninput="checkUser(this)">
+      <div id="user-hint" class="pw-hint"></div>
+    </div>
+
+    <div class="form-group">
+      <label><span>📧</span>&nbsp;Email <small style="color:var(--muted)">(optional – for password reset)</small></label>
+      <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
+    </div>
+
+    <div class="form-group">
+      <label><span>🔒</span>&nbsp;Password</label>
+      <div class="input-wrap">
+        <input type="password" id="password" placeholder="Min 4 characters" autocomplete="new-password" oninput="checkStrength(this.value)">
+        <button class="toggle-pw" type="button" onclick="togglePw('password', this)">👁️</button>
+      </div>
+      <div class="pw-strength"><div class="pw-strength-bar" id="str-bar"></div></div>
+      <div class="pw-hint" id="str-hint">Enter a password</div>
+    </div>
+
+    <div class="form-group">
+      <label><span>🔒</span>&nbsp;Confirm Password</label>
+      <div class="input-wrap">
+        <input type="password" id="confirm" placeholder="Repeat password" oninput="checkMatch()">
+        <button class="toggle-pw" type="button" onclick="togglePw('confirm', this)">👁️</button>
+      </div>
+      <div class="pw-hint" id="match-hint"></div>
+    </div>
+
+    <div class="form-group">
+      <label><span>🎭</span>&nbsp;Choose Your Avatar</label>
+      <div class="avatar-picker" id="avatar-picker">
+        {% set avatars = ['🎮','🕹️','👾','🤖','🦊','🐉','⚡','🔥','💎','🎯','🏆','🌟'] %}
+        {% for av in avatars %}
+        <div class="avatar-opt{% if loop.first %} selected{% endif %}"
+             data-av="{{ av }}" onclick="pickAvatar(this)">{{ av }}</div>
+        {% endfor %}
+      </div>
+      <input type="hidden" id="avatar" value="🎮">
+    </div>
+
+    <button class="auth-btn" id="reg-btn" onclick="doRegister()">CREATE ACCOUNT</button>
+    <div class="auth-divider">or</div>
+    <p class="auth-link">Already have an account? <a href="/login">Login →</a></p>
+  </div>
+</div>
+
+<script>
+function togglePw(id, btn) {
+  var inp = document.getElementById(id);
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁️'; }
+}
+
+function pickAvatar(el) {
+  document.querySelectorAll('.avatar-opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+  document.getElementById('avatar').value = el.getAttribute('data-av');
+}
+
+function checkUser(inp) {
+  var hint = document.getElementById('user-hint');
+  var v = inp.value.trim();
+  if (v.length === 0) { hint.textContent = ''; return; }
+  if (v.length < 3) {
+    hint.style.color = 'var(--accent3)';
+    hint.textContent = 'Too short (min 3 chars)';
+  } else {
+    hint.style.color = 'var(--accent)';
+    hint.textContent = '✓ Looks good!';
+  }
+}
+
+function checkStrength(pw) {
+  var bar  = document.getElementById('str-bar');
+  var hint = document.getElementById('str-hint');
+  if (!pw) { bar.style.width = '0'; hint.textContent = 'Enter a password'; return; }
+  var score = 0;
+  if (pw.length >= 4)           score++;
+  if (pw.length >= 8)           score++;
+  if (/[A-Z]/.test(pw))         score++;
+  if (/[0-9]/.test(pw))         score++;
+  if (/[^A-Za-z0-9]/.test(pw))  score++;
+  var levels = [
+    { w:'20%', c:'#ff4444', t:'Weak' },
+    { w:'40%', c:'#ff8800', t:'Fair' },
+    { w:'60%', c:'#ffcc00', t:'Good' },
+    { w:'80%', c:'#88ff00', t:'Strong' },
+    { w:'100%',c:'#00ff87', t:'Very Strong' }
+  ];
+  var l = levels[Math.min(score, 4)];
+  bar.style.width      = l.w;
+  bar.style.background = l.c;
+  hint.style.color     = l.c;
+  hint.textContent     = l.t;
+}
+
+function checkMatch() {
+  var hint = document.getElementById('match-hint');
+  var p1 = document.getElementById('password').value;
+  var p2 = document.getElementById('confirm').value;
+  if (!p2) { hint.textContent = ''; return; }
+  if (p1 === p2) {
+    hint.style.color = 'var(--accent)';
+    hint.textContent = '✓ Passwords match';
+  } else {
+    hint.style.color = 'var(--accent3)';
+    hint.textContent = '✗ Passwords do not match';
+  }
+}
+
+function showErr(msg) {
+  document.getElementById('err-text').textContent = msg;
+  document.getElementById('error-msg').style.display = 'flex';
+}
+
+function hideErr() {
+  document.getElementById('error-msg').style.display = 'none';
+}
+
+async function doRegister() {
+  hideErr();
+  var username = document.getElementById('username').value.trim();
+  var email    = document.getElementById('email').value.trim();
+  var password = document.getElementById('password').value;
+  var confirm  = document.getElementById('confirm').value;
+  var avatar   = document.getElementById('avatar').value;
+
+  if (!username || !password) { showErr('Please fill in required fields'); return; }
+  if (username.length < 3)    { showErr('Username must be at least 3 characters'); return; }
+  if (password.length < 4)    { showErr('Password must be at least 4 characters'); return; }
+  if (confirm && password !== confirm) { showErr('Passwords do not match'); return; }
+
+  var btn = document.getElementById('reg-btn');
+  btn.disabled = true;
+  btn.textContent = 'Creating account...';
+
+  try {
+    var res = await fetch('/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username, email: email, password: password, avatar: avatar })
+    });
+
+    if (!res.ok) {
+      showErr('Server error. Please try again.');
+      btn.disabled = false; btn.textContent = 'CREATE ACCOUNT'; return;
+    }
+
+    var data = await res.json();
+    if (data.success) {
+      btn.textContent = '✓ Account created!';
+      window.location.href = '/';
+    } else {
+      showErr(data.message || 'Registration failed');
+      btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
+    }
+  } catch (err) {
+    showErr('Connection error: ' + err.message);
+    btn.disabled = false; btn.textContent = 'CREATE ACCOUNT';
+  }
+}
+</script>
+{% endblock %}

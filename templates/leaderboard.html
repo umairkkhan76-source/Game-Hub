@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard – Game Hub{% endblock %}
+{% block content %}
+<div class="leaderboard-page">
+
+  <div class="page-header">
+    <h1 class="page-title">🏆 LEADERBOARD</h1>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btn-best"    onclick="setMode('best')">Best Scores</button>
+      <button class="mode-btn"        id="btn-history" onclick="setMode('history')">All History</button>
+    </div>
+  </div>
+
+  <div class="lb-tabs" id="tabs">
+    <button class="lb-tab active" onclick="loadBoard('',event)">All Games</button>
+    <button class="lb-tab" onclick="loadBoard('snake',event)">🐍 Snake</button>
+    <button class="lb-tab" onclick="loadBoard('tictactoe',event)">⭕ Tic Tac Toe</button>
+    <button class="lb-tab" onclick="loadBoard('memory',event)">🃏 Memory</button>
+    <button class="lb-tab" onclick="loadBoard('quiz',event)">🧠 Quiz</button>
+    <button class="lb-tab" onclick="loadBoard('breakout',event)">🧱 Breakout</button>
+    <button class="lb-tab" onclick="loadBoard('flappy',event)">🐦 Flappy</button>
+    <button class="lb-tab" onclick="loadBoard('whackamole',event)">🔨 Whack-a-Mole</button>
+    <button class="lb-tab" onclick="loadBoard('chess',event)">♟️ Chess</button>
+    <button class="lb-tab" onclick="loadBoard('sudoku',event)">🔢 Sudoku</button>
+    <button class="lb-tab" onclick="loadBoard('pong',event)">🏓 Pong</button>
+    <button class="lb-tab" onclick="loadBoard('game2048',event)">2️⃣ 2048</button>
+    <button class="lb-tab" onclick="loadBoard('rps',event)">✂️ RPS</button>
+  </div>
+
+  <div class="lb-table-wrap">
+    <table class="lb-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Player</th>
+          <th id="game-col">Game</th>
+          <th>Score</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="lb-body">
+        <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Loading...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+let currentGame = '';
+let currentMode = 'best';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('btn-best').classList.toggle('active', mode==='best');
+  document.getElementById('btn-history').classList.toggle('active', mode==='history');
+  loadBoard(currentGame, null);
+}
+
+function loadBoard(game, e) {
+  currentGame = game;
+  if (e) {
+    document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+  }
+  const gameCol = document.getElementById('game-col');
+  gameCol.style.display = game ? 'none' : '';
+
+  fetch(`/api/leaderboard?game=${game}&mode=${currentMode}`)
+    .then(r => r.json())
+    .then(data => {
+      const tbody = document.getElementById('lb-body');
+      if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:3rem;color:var(--muted)">
+          <span style="font-size:2rem;display:block;margin-bottom:.5rem">🎮</span>
+          No scores yet — play a game and be the first!
+        </td></tr>`;
+        return;
+      }
+      const GAME_ICONS = {snake:'🐍',tictactoe:'⭕',memory:'🃏',quiz:'🧠',breakout:'🧱',
+        flappy:'🐦',whackamole:'🔨',chess:'♟️',sudoku:'🔢',pong:'🏓',game2048:'2️⃣',rps:'✂️'};
+      tbody.innerHTML = data.map((r,i) => `
+        <tr class="${i<3?'top-'+(i+1):''}">
+          <td style="font-size:1.2rem">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td>
+          <td>
+            <div class="player-cell">
+              <span>${r.avatar||'🎮'}</span>
+              <span>${r.username}</span>
+            </div>
+          </td>
+          <td style="display:${game?'none':''}">
+            ${GAME_ICONS[r.game]||''} ${r.game||''}
+          </td>
+          <td class="score-val">${Number(r.score).toLocaleString()}</td>
+          <td style="color:var(--muted);font-size:.85rem">${new Date(r.played_at).toLocaleDateString()}</td>
+        </tr>
+      `).join('');
+    });
+}
+
+loadBoard('', null);
+</script>
+{% endblock %}
